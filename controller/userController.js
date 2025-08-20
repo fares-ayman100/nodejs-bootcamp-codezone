@@ -1,0 +1,80 @@
+const asyncWrapper = require("../middleware/asyncWrapper");
+const User = require("../models/users.model");
+const { message } = require("../utils/appError");
+const httpStatus = require("../utils/http_Server_State");
+const appError = require("../utils/appError");
+const bcrypt = require("bcrypt");
+const getAllUsers = asyncWrapper(async (req, res) => {
+  const query = req.query;
+  const limit = query.limit || User.countDocuments();
+  const page = query.page || 1;
+  const skip = (page - 1) * limit;
+
+  const Usres = await User.find({}, { __v: false, password: false })
+    .limit(limit)
+    .skip(skip);
+  res.json({
+    status: httpStatus.SUCCESS,
+    data: { Users: Usres },
+  });
+});
+const register = asyncWrapper(async (req, res, next) => {
+  console.log(req.body);
+  const { firstName, lastName, email, password } = req.body;
+  const oldUser = await User.findOne({ email: email });
+  const bcryptPassword = await bcrypt.hash(password, 6);
+
+  const newUser = new User({
+    firstName,
+    lastName,
+    email,
+    password: bcryptPassword,
+  });
+  if (oldUser) {
+    const error = appError.create(
+      httpStatus.FAILD,
+      "Email Is Already EXist",
+      400
+    );
+    return next(error);
+  }
+
+  await newUser.save();
+  res.status(201).json({
+    status: httpStatus.SUCCESS,
+    data: { user: newUser },
+  });
+});
+const login = asyncWrapper(async (req, res, next) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    const error = appError.create(
+      httpStatus.FAILD,
+      "Email and Pasword Is Required",
+      400
+    );
+    return next(error);
+  }
+
+  const user = await User.findOne({ email: email });
+  if (!user) {
+    const error = appError.create(httpStatus.FAILD, "Email Is Not EXist", 400);
+    return next(error);
+  }
+  const matchedPassword = await bcrypt.compare(password, user.password);
+
+  if (user && matchedPassword) {
+    return res
+      .json({ status: httpStatus.SUCCESS, message: "Logged in Successful" })
+      .status(200);
+  } else {
+    return res
+      .status(400)
+      .json({ status: httpStatus.FAILD, message: "Password Is incorrect" });
+  }
+});
+module.exports = {
+  getAllUsers,
+  login,
+  register,
+};
