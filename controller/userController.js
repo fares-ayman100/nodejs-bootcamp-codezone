@@ -1,10 +1,11 @@
 const asyncWrapper = require("../middleware/asyncWrapper");
 const User = require("../models/users.model");
-const { message } = require("../utils/appError");
 const httpStatus = require("../utils/http_Server_State");
 const appError = require("../utils/appError");
 const bcrypt = require("bcrypt");
+const generateJWT = require("../utils/generate_access_token");
 const getAllUsers = asyncWrapper(async (req, res) => {
+  console.log(req.headers);
   const query = req.query;
   const limit = query.limit || User.countDocuments();
   const page = query.page || 1;
@@ -24,12 +25,6 @@ const register = asyncWrapper(async (req, res, next) => {
   const oldUser = await User.findOne({ email: email });
   const bcryptPassword = await bcrypt.hash(password, 6);
 
-  const newUser = new User({
-    firstName,
-    lastName,
-    email,
-    password: bcryptPassword,
-  });
   if (oldUser) {
     const error = appError.create(
       httpStatus.FAILD,
@@ -38,11 +33,19 @@ const register = asyncWrapper(async (req, res, next) => {
     );
     return next(error);
   }
+  const newUser = new User({
+    firstName,
+    lastName,
+    email,
+    password: bcryptPassword,
+  });
 
+  const token = await generateJWT({ email: newUser.email, id: newUser._id });
+  newUser.token = token;
   await newUser.save();
   res.status(201).json({
     status: httpStatus.SUCCESS,
-    data: { user: newUser },
+    data: { user: newUser, token },
   });
 });
 const login = asyncWrapper(async (req, res, next) => {
@@ -64,8 +67,13 @@ const login = asyncWrapper(async (req, res, next) => {
   const matchedPassword = await bcrypt.compare(password, user.password);
 
   if (user && matchedPassword) {
+    const token = await generateJWT({ email: user.email, id: user._id });
     return res
-      .json({ status: httpStatus.SUCCESS, message: "Logged in Successful" })
+      .json({
+        status: httpStatus.SUCCESS,
+        message: "Logged in Successful",
+        data: { token },
+      })
       .status(200);
   } else {
     return res

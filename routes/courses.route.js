@@ -1,4 +1,4 @@
-let controller = require("../controller/controller");
+let controller = require("../controller/coursesController");
 const express = require("express");
 const router = express.Router();
 const { validationSchema } = require("../middleware/validationSchema");
