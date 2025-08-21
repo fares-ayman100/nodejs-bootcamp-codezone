@@ -21,7 +21,7 @@ const getAllUsers = asyncWrapper(async (req, res) => {
 });
 const register = asyncWrapper(async (req, res, next) => {
   console.log(req.body);
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password, role } = req.body;
   const oldUser = await User.findOne({ email: email });
   const bcryptPassword = await bcrypt.hash(password, 6);
 
@@ -38,14 +38,19 @@ const register = asyncWrapper(async (req, res, next) => {
     lastName,
     email,
     password: bcryptPassword,
+    role: role,
   });
 
-  const token = await generateJWT({ email: newUser.email, id: newUser._id });
+  const token = await generateJWT({
+    email: newUser.email,
+    id: newUser._id,
+    role: newUser.role,
+  });
   newUser.token = token;
   await newUser.save();
   res.status(201).json({
     status: httpStatus.SUCCESS,
-    data: { user: newUser, token },
+    data: { user: newUser },
   });
 });
 const login = asyncWrapper(async (req, res, next) => {
@@ -67,7 +72,11 @@ const login = asyncWrapper(async (req, res, next) => {
   const matchedPassword = await bcrypt.compare(password, user.password);
 
   if (user && matchedPassword) {
-    const token = await generateJWT({ email: user.email, id: user._id });
+    const token = await generateJWT({
+      email: user.email,
+      id: user._id,
+      role: user.role,
+    });
     return res
       .json({
         status: httpStatus.SUCCESS,

@@ -10,7 +10,9 @@ const verifyToken = (req, res, next) => {
   }
   const token = authHeaders.split(" ")[1];
   try {
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const currentUser = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    req.currentUser = currentUser;
+    console.log("Current User", currentUser);
     next();
   } catch (err) {
     const error = appError.create(httpStatus.FAILD, "Invalid Token", 401);
