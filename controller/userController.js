@@ -22,6 +22,7 @@ const getAllUsers = asyncWrapper(async (req, res) => {
 const register = asyncWrapper(async (req, res, next) => {
   console.log(req.body);
   const { firstName, lastName, email, password, role } = req.body;
+  console.log("REq.file ", req.file);
   const oldUser = await User.findOne({ email: email });
   const bcryptPassword = await bcrypt.hash(password, 6);
 
@@ -39,6 +40,7 @@ const register = asyncWrapper(async (req, res, next) => {
     email,
     password: bcryptPassword,
     role: role,
+    avatar: req.file.filename,
   });
 
   const token = await generateJWT({

@@ -12,7 +12,7 @@ const verifyToken = (req, res, next) => {
   try {
     const currentUser = jwt.verify(token, process.env.JWT_SECRET_KEY);
     req.currentUser = currentUser;
-    console.log("Current User", currentUser);
+    //console.log("Current User", currentUser);
     next();
   } catch (err) {
     const error = appError.create(httpStatus.FAILD, "Invalid Token", 401);

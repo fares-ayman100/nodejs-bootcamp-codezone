@@ -4,6 +4,7 @@ const httpStatus = require("./utils/http_Server_State");
 const courseRouter = require("./routes/courses.route");
 const userRouter = require("./routes/users.route");
 const cors = require("cors");
+const path = require("node:path");
 
 require("dotenv").config();
 const url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@learnmongodb.9r8z0ga.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority&appName=LearnMongoDB`;
@@ -12,6 +13,7 @@ mongoose.connect(url).then(() => {
   console.log("Connection Successful");
 });
 const app = express();
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
