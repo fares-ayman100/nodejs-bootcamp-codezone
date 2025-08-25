@@ -16,6 +16,9 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
+app.get("/", (req, res) => {
+  res.send("🚀 API is running! Use /api/users or /api/courses");
+});
 app.use("/api/courses", courseRouter);
 app.use("/api/users", userRouter);
 
@@ -33,6 +36,8 @@ app.use((error, req, res, next) => {
     data: null,
   });
 });
-app.listen(process.env.PORT || 3000, "0.0.0.0", () => {
-  console.log(`🚀 Server running on port ${process.env.PORT || 3000}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
+
