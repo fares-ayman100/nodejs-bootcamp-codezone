@@ -8,7 +8,7 @@ const path = require("node:path");
 
 require("dotenv").config();
 const mongoose = require("mongoose");
-mongoose.connect(process.env.MONGODB_URI).then(() => {
+mongoose.connect(process.env.MONGO_URL).then(() => {
   console.log("Connection Successful");
 });
 const app = express();
