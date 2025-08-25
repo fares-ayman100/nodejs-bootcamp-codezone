@@ -7,9 +7,8 @@ const cors = require("cors");
 const path = require("node:path");
 
 require("dotenv").config();
-const url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@learnmongodb.9r8z0ga.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority&appName=LearnMongoDB`;
 const mongoose = require("mongoose");
-mongoose.connect(url).then(() => {
+mongoose.connect(process.env.MONGODB_URI).then(() => {
   console.log("Connection Successful");
 });
 const app = express();
@@ -34,6 +33,6 @@ app.use((error, req, res, next) => {
     data: null,
   });
 });
-app.listen(process.env.PORT, () => {
-  console.log("Lisitning On Port 3000");
+app.listen(process.env.PORT || 3000, "0.0.0.0", () => {
+  console.log(`🚀 Server running on port ${process.env.PORT || 3000}`);
 });
