@@ -20,10 +20,11 @@ app.use("/api/courses", courseRouter);
 app.use("/api/users", userRouter);
 
 app.use((req, res, next) => {
-  const err = new Error("Route does not exist");
+  const err = new Error(`Can't find ${req.originalUrl} on this server!`);
   err.statusCode = 404;
   next(err);
 });
+
 
 app.use((error, req, res, next) => {
   return res.status(error.statusCode || 500).json({
