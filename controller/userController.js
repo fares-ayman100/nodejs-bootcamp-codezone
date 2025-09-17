@@ -1,8 +1,8 @@
+const bcrypt = require("bcrypt");
 const asyncWrapper = require("../middleware/asyncWrapper");
 const User = require("../models/users.model");
 const httpStatus = require("../utils/http_Server_State");
 const appError = require("../utils/appError");
-const bcrypt = require("bcrypt");
 const generateJWT = require("../utils/generate_access_token");
 const getAllUsers = asyncWrapper(async (req, res) => {
   console.log(req.headers);
@@ -40,7 +40,7 @@ const register = asyncWrapper(async (req, res, next) => {
     email,
     password: bcryptPassword,
     role: role,
-    avatar: req.file.filename,
+    avatar: req.file ? req.file.filename : null,
   });
 
   const token = await generateJWT({

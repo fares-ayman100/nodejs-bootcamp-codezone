@@ -1,10 +1,10 @@
+const path = require("node:path");
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 const httpStatus = require("./utils/http_Server_State");
 const courseRouter = require("./routes/courses.route");
 const userRouter = require("./routes/users.route");
-const cors = require("cors");
-const path = require("node:path");
 
 require("dotenv").config();
 const mongoose = require("mongoose");
@@ -25,7 +25,6 @@ app.use((req, res, next) => {
   next(err);
 });
 
-
 app.use((error, req, res, next) => {
   return res.status(error.statusCode || 500).json({
     status: error.statusText || httpStatus.ERROR,
@@ -38,4 +37,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
-

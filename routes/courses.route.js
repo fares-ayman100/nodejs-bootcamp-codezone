@@ -1,11 +1,11 @@
-let controller = require("../controller/coursesController");
 const express = require("express");
+let controller = require("../controller/coursesController");
 const verifyToken = require("../middleware/verifyToken");
-const allowedTo=require("../middleware/allowedTo")
+const allowedTo = require("../middleware/allowedTo");
 const userRole = require("../utils/userRoles");
+const { validationSchema } = require("../middleware/validationSchema");
 
 const router = express.Router();
-const { validationSchema } = require("../middleware/validationSchema");
 router
   .route("")
   .get(controller.getAllCourses)

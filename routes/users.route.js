@@ -1,8 +1,8 @@
 const express = require("express");
-const router = express.Router();
-const userController = require("../controller/userController");
 const multer = require("multer");
 const httpStatus = require("../utils/http_Server_State");
+const userController = require("../controller/userController");
+const router = express.Router();
 const diskStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     console.log("file======", file);
@@ -15,7 +15,7 @@ const diskStorage = multer.diskStorage({
     cb(null, filName);
   },
 });
-const filFilter =  (req, file, cb)=> {
+const filFilter = (req, file, cb) => {
   const imageType = file.mimetype.split("/")[0];
   if (imageType == "image") {
     return cb(null, true);
