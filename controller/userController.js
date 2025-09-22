@@ -5,7 +5,6 @@ const httpStatus = require("../utils/http_Server_State");
 const appError = require("../utils/appError");
 const generateJWT = require("../utils/generate_access_token");
 const getAllUsers = asyncWrapper(async (req, res) => {
-  console.log(req.headers);
   const query = req.query;
   const limit = query.limit || User.countDocuments();
   const page = query.page || 1;
@@ -20,9 +19,7 @@ const getAllUsers = asyncWrapper(async (req, res) => {
   });
 });
 const register = asyncWrapper(async (req, res, next) => {
-  console.log(req.body);
   const { firstName, lastName, email, password, role } = req.body;
-  console.log("REq.file ", req.file);
   const oldUser = await User.findOne({ email: email });
   const bcryptPassword = await bcrypt.hash(password, 6);
 
