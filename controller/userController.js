@@ -26,7 +26,7 @@ const register = asyncWrapper(async (req, res, next) => {
   if (oldUser) {
     const error = appError.create(
       httpStatus.FAILD,
-      "Email Is Already EXist",
+      "Email Is Already Exist",
       400
     );
     return next(error);
